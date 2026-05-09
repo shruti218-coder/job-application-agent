@@ -9,342 +9,128 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #ffffff;
-      --bg-secondary: #f5f5f3;
-      --bg-success: #e1f5ee;
-      --text: #1a1a18;
-      --text-secondary: #6b6b67;
-      --border: rgba(0,0,0,0.12);
-      --border-hover: rgba(0,0,0,0.25);
-      --radius-md: 8px;
-      --radius-lg: 12px;
-      --accent: #1a1a18;
-      --success: #1D9E75;
-      --success-text: #3B6D11;
-      --success-bg: #EAF3DE;
-      --danger: #E24B4A;
-      --danger-text: #A32D2D;
-      --danger-bg: #FCEBEB;
-      --warning-text: #BA7517;
-      --warning-bg: #FAEEDA;
+      --bg: #ffffff; --bg-secondary: #f5f5f3; --bg-success: #e1f5ee;
+      --text: #1a1a18; --text-secondary: #6b6b67;
+      --border: rgba(0,0,0,0.12); --border-hover: rgba(0,0,0,0.25);
+      --radius-md: 8px; --radius-lg: 12px; --accent: #1a1a18;
+      --success: #1D9E75; --success-text: #3B6D11; --success-bg: #EAF3DE;
+      --danger: #E24B4A; --danger-text: #A32D2D; --danger-bg: #FCEBEB;
+      --warning-text: #BA7517; --warning-bg: #FAEEDA;
     }
-
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #1c1c1a;
-        --bg-secondary: #252523;
-        --bg-success: #04342C;
-        --text: #f0ede8;
-        --text-secondary: #9a9a94;
-        --border: rgba(255,255,255,0.12);
-        --border-hover: rgba(255,255,255,0.25);
-        --accent: #f0ede8;
-        --success: #5DCAA5;
-        --success-text: #9FE1CB;
-        --success-bg: #085041;
-        --danger-text: #F7C1C1;
-        --danger-bg: #501313;
-        --warning-text: #FAC775;
-        --warning-bg: #412402;
+        --bg: #1c1c1a; --bg-secondary: #252523; --bg-success: #04342C;
+        --text: #f0ede8; --text-secondary: #9a9a94;
+        --border: rgba(255,255,255,0.12); --border-hover: rgba(255,255,255,0.25);
+        --accent: #f0ede8; --success: #5DCAA5;
+        --success-text: #9FE1CB; --success-bg: #085041;
+        --danger-text: #F7C1C1; --danger-bg: #501313;
+        --warning-text: #FAC775; --warning-bg: #412402;
       }
     }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg-secondary);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem 1rem;
+      background: var(--bg-secondary); color: var(--text);
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; padding: 2rem 1rem;
     }
-
-    .container {
-      width: 100%;
-      max-width: 680px;
-    }
-
-    header {
-      margin-bottom: 2rem;
-    }
-
-    header h1 {
-      font-size: 24px;
-      font-weight: 600;
-      letter-spacing: -0.3px;
-    }
-
-    header p {
-      font-size: 14px;
-      color: var(--text-secondary);
-      margin-top: 6px;
-      line-height: 1.6;
-    }
-
+    .container { width: 100%; max-width: 680px; }
+    header { margin-bottom: 2rem; }
+    header h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.3px; }
+    header p { font-size: 14px; color: var(--text-secondary); margin-top: 6px; line-height: 1.6; }
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 11px;
-      font-weight: 500;
-      padding: 3px 10px;
-      border-radius: 99px;
-      background: var(--success-bg);
-      color: var(--success-text);
-      margin-bottom: 12px;
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 500; padding: 3px 10px;
+      border-radius: 99px; background: var(--success-bg);
+      color: var(--success-text); margin-bottom: 12px;
     }
-
     .step { display: none; }
     .step.active { display: block; }
-
-    .progress {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 1.75rem;
-    }
-
-    .pip {
-      height: 3px;
-      flex: 1;
-      border-radius: 99px;
-      background: var(--border);
-      transition: background 0.3s;
-    }
-
+    .progress { display: flex; gap: 6px; margin-bottom: 1.75rem; }
+    .pip { height: 3px; flex: 1; border-radius: 99px; background: var(--border); transition: background 0.3s; }
     .pip.done { background: var(--accent); }
-
     .section-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      margin-bottom: 8px;
-      margin-top: 1.25rem;
+      font-size: 11px; font-weight: 600; color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-bottom: 8px; margin-top: 1.25rem;
     }
-
-    textarea, input[type="text"] {
-      width: 100%;
-      background: var(--bg);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px 14px;
-      font-size: 14px;
-      color: var(--text);
-      font-family: inherit;
-      line-height: 1.6;
-      outline: none;
+    textarea, input[type="text"], input[type="password"] {
+      width: 100%; background: var(--bg); border: 0.5px solid var(--border);
+      border-radius: var(--radius-md); padding: 12px 14px; font-size: 14px;
+      color: var(--text); font-family: inherit; line-height: 1.6; outline: none;
       transition: border-color 0.15s;
     }
-
     textarea { resize: vertical; min-height: 130px; }
-
-    textarea:focus, input[type="text"]:focus {
-      border-color: var(--border-hover);
-      box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+    textarea:focus, input:focus { border-color: var(--border-hover); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
+    .api-key-row { display: flex; gap: 8px; align-items: center; }
+    .api-key-row input { flex: 1; }
+    .toggle-key {
+      background: none; border: 0.5px solid var(--border); border-radius: var(--radius-md);
+      padding: 0 12px; height: 42px; cursor: pointer; color: var(--text-secondary);
+      font-size: 15px; flex-shrink: 0;
     }
-
     .upload-zone {
-      background: var(--bg);
-      border: 1.5px dashed var(--border-hover);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      text-align: center;
-      cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
-      position: relative;
+      background: var(--bg); border: 1.5px dashed var(--border-hover);
+      border-radius: var(--radius-lg); padding: 1.5rem; text-align: center;
+      cursor: pointer; transition: background 0.15s, border-color 0.15s;
     }
-
     .upload-zone:hover { background: var(--bg-secondary); }
-
-    .upload-zone.has-file {
-      border-color: var(--success);
-      background: var(--bg-success);
-    }
-
+    .upload-zone.has-file { border-color: var(--success); background: var(--bg-success); }
     .upload-zone.has-file .upload-icon { color: var(--success); }
     .upload-zone.has-file .upload-label { color: var(--success-text); }
     .upload-zone.has-file .upload-hint { color: var(--success-text); opacity: 0.75; }
-
     .upload-icon { font-size: 28px; color: var(--text-secondary); margin-bottom: 8px; }
     .upload-label { font-size: 14px; font-weight: 500; color: var(--text); }
     .upload-hint { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
-
-    .api-key-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .api-key-row input { flex: 1; }
-
-    .toggle-key {
-      background: none;
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 0 12px;
-      height: 42px;
-      cursor: pointer;
-      color: var(--text-secondary);
-      font-size: 15px;
-      flex-shrink: 0;
-    }
-
     .big-btn {
-      width: 100%;
-      padding: 13px;
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      background: var(--accent);
-      color: var(--bg);
-      border: none;
-      border-radius: var(--radius-md);
-      margin-top: 1.25rem;
-      transition: opacity 0.15s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      width: 100%; padding: 13px; font-size: 15px; font-weight: 500;
+      cursor: pointer; background: var(--accent); color: var(--bg);
+      border: none; border-radius: var(--radius-md); margin-top: 1.25rem;
+      transition: opacity 0.15s; display: flex; align-items: center;
+      justify-content: center; gap: 8px;
     }
-
     .big-btn:hover { opacity: 0.85; }
     .big-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-
     .card {
-      background: var(--bg);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.25rem;
-      margin-bottom: 1rem;
+      background: var(--bg); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1rem;
     }
-
-    .score-card {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-    }
-
+    .score-card { display: flex; align-items: center; gap: 1.25rem; }
     .score-ring {
-      width: 76px;
-      height: 76px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      font-weight: 600;
-      flex-shrink: 0;
+      width: 76px; height: 76px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 600; flex-shrink: 0;
     }
-
     .section-title {
-      font-size: 14px;
-      font-weight: 600;
-      margin: 0 0 10px;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      font-size: 14px; font-weight: 600; margin: 0 0 10px; color: var(--text);
+      display: flex; align-items: center; gap: 6px;
     }
-
     .tag {
-      display: inline-block;
-      font-size: 12px;
-      padding: 4px 11px;
-      border-radius: 99px;
-      margin: 3px 3px 3px 0;
-      font-weight: 500;
+      display: inline-block; font-size: 12px; padding: 4px 11px;
+      border-radius: 99px; margin: 3px 3px 3px 0; font-weight: 500;
     }
-
     .tag-green { background: var(--success-bg); color: var(--success-text); }
     .tag-red { background: var(--danger-bg); color: var(--danger-text); }
-
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .result-text {
-      font-size: 14px;
-      line-height: 1.75;
-      color: var(--text);
-      white-space: pre-wrap;
-    }
-
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .result-text { font-size: 14px; line-height: 1.75; color: var(--text); white-space: pre-wrap; }
     .back-btn {
-      font-size: 13px;
-      color: var(--text-secondary);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      margin-bottom: 1.25rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
+      font-size: 13px; color: var(--text-secondary); background: none;
+      border: none; cursor: pointer; padding: 0; margin-bottom: 1.25rem;
+      display: inline-flex; align-items: center; gap: 5px;
     }
-
     .back-btn:hover { color: var(--text); }
-
     .copy-btn {
-      font-size: 12px;
-      color: var(--text-secondary);
-      background: none;
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 4px 10px;
-      cursor: pointer;
-      float: right;
-      margin-top: -2px;
+      font-size: 12px; color: var(--text-secondary); background: none;
+      border: 0.5px solid var(--border); border-radius: var(--radius-md);
+      padding: 4px 10px; cursor: pointer; float: right; margin-top: -2px;
     }
-
     .copy-btn:hover { border-color: var(--border-hover); color: var(--text); }
-
-    .loading-label {
-      font-size: 16px;
-      font-weight: 500;
-      margin-bottom: 1rem;
-    }
-
-    .status-text {
-      font-size: 14px;
-      color: var(--text-secondary);
-      min-height: 24px;
-    }
-
-    .prog-track {
-      margin-top: 1rem;
-      height: 3px;
-      background: var(--border);
-      border-radius: 99px;
-      overflow: hidden;
-    }
-
-    .prog-fill {
-      height: 100%;
-      width: 0%;
-      background: var(--accent);
-      border-radius: 99px;
-      transition: width 0.4s ease;
-    }
-
-    footer {
-      margin-top: 3rem;
-      font-size: 12px;
-      color: var(--text-secondary);
-      text-align: center;
-    }
-
+    .prog-track { margin-top: 1rem; height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .prog-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 99px; transition: width 0.4s ease; }
+    footer { margin-top: 3rem; font-size: 12px; color: var(--text-secondary); text-align: center; }
     footer a { color: var(--text-secondary); }
-
-    @media (max-width: 500px) {
-      .two-col { grid-template-columns: 1fr; }
-      body { padding: 1.25rem 0.75rem; }
-    }
+    @media (max-width: 500px) { .two-col { grid-template-columns: 1fr; } body { padding: 1.25rem 0.75rem; } }
   </style>
 </head>
 <body>
@@ -353,16 +139,11 @@
   <header>
     <div class="badge"><i class="ti ti-robot" aria-hidden="true"></i> AI-powered</div>
     <h1>Job Application Agent</h1>
-    <p>Paste a job description and upload your resume. The agent scores your match, rewrites your bullets, identifies skill gaps, and drafts a tailored cover letter — automatically.</p>
+    <p>Upload your Word resume and a job description. The agent scores your match, rewrites your bullets in-place, drafts a cover letter, and returns your <strong>updated resume</strong> as a .docx.</p>
   </header>
 
-  <!-- STEP 1: INPUT -->
   <div id="step1" class="step active">
-    <div class="progress">
-      <div class="pip done"></div>
-      <div class="pip"></div>
-      <div class="pip"></div>
-    </div>
+    <div class="progress"><div class="pip done"></div><div class="pip"></div><div class="pip"></div></div>
 
     <div class="section-label" style="margin-top:0;">Anthropic API key</div>
     <div class="api-key-row">
@@ -372,8 +153,8 @@
       </button>
     </div>
     <p style="font-size:12px;color:var(--text-secondary);margin-top:6px;">
-      Your key is never stored or sent anywhere except directly to Anthropic's API.
-      <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:inherit;">Get a key →</a>
+      Saved in your browser — never sent anywhere except directly to Anthropic.
+      <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:inherit;">Get a key →</a> &nbsp;·&nbsp; <a href="#" onclick="forgetKey(event)" style="color:inherit;">Forget saved key</a>
     </p>
 
     <div class="section-label">Job description</div>
@@ -384,37 +165,24 @@
       <input type="file" id="file-input" accept=".docx" style="display:none" onchange="handleFile(event)">
       <div class="upload-icon"><i class="ti ti-file-word" aria-hidden="true"></i></div>
       <div class="upload-label" id="upload-label">Upload your Word resume</div>
-      <div class="upload-hint" id="upload-hint">.docx files only — click to browse</div>
+      <div class="upload-hint" id="upload-hint">.docx only — experience bullets will be replaced in-place</div>
     </div>
 
-    <button class="big-btn" id="analyze-btn" onclick="runAgent()">
-      <i class="ti ti-sparkles" aria-hidden="true"></i> Analyze my application
+    <button class="big-btn" onclick="runAgent()">
+      <i class="ti ti-sparkles" aria-hidden="true"></i> Analyze &amp; tailor my resume
     </button>
   </div>
 
-  <!-- STEP 2: LOADING -->
   <div id="step2" class="step">
-    <div class="progress">
-      <div class="pip done"></div>
-      <div class="pip done"></div>
-      <div class="pip"></div>
-    </div>
-    <p class="loading-label">Analyzing your application…</p>
-    <p class="status-text" id="stream-status"></p>
+    <div class="progress"><div class="pip done"></div><div class="pip done"></div><div class="pip"></div></div>
+    <p style="font-size:16px;font-weight:500;margin-bottom:1rem;">Analyzing your application…</p>
+    <p style="font-size:14px;color:var(--text-secondary);min-height:24px;" id="stream-status"></p>
     <div class="prog-track"><div class="prog-fill" id="progress-bar"></div></div>
   </div>
 
-  <!-- STEP 3: RESULTS -->
   <div id="step3" class="step">
-    <div class="progress">
-      <div class="pip done"></div>
-      <div class="pip done"></div>
-      <div class="pip done"></div>
-    </div>
-
-    <button class="back-btn" onclick="reset()">
-      <i class="ti ti-arrow-left" aria-hidden="true"></i> Start over
-    </button>
+    <div class="progress"><div class="pip done"></div><div class="pip done"></div><div class="pip done"></div></div>
+    <button class="back-btn" onclick="reset()"><i class="ti ti-arrow-left" aria-hidden="true"></i> Start over</button>
 
     <div class="card score-card">
       <div class="score-ring" id="score-ring"></div>
@@ -426,25 +194,18 @@
 
     <div class="two-col">
       <div class="card">
-        <p class="section-title">
-          <i class="ti ti-circle-check" style="color:var(--success);" aria-hidden="true"></i>
-          Skills you have
-        </p>
+        <p class="section-title"><i class="ti ti-circle-check" style="color:var(--success);" aria-hidden="true"></i> Skills you have</p>
         <div id="skills-match"></div>
       </div>
       <div class="card">
-        <p class="section-title">
-          <i class="ti ti-alert-circle" style="color:var(--danger);" aria-hidden="true"></i>
-          Gaps to address
-        </p>
+        <p class="section-title"><i class="ti ti-alert-circle" style="color:var(--danger);" aria-hidden="true"></i> Gaps to address</p>
         <div id="skills-gap"></div>
       </div>
     </div>
 
     <div class="card">
       <p class="section-title">
-        <i class="ti ti-list" aria-hidden="true"></i>
-        Rewritten resume bullets
+        <i class="ti ti-list" aria-hidden="true"></i> Tailored experience bullets
         <button class="copy-btn" onclick="copyText('bullets-out', this)">Copy</button>
       </p>
       <div id="bullets-out" class="result-text"></div>
@@ -452,23 +213,24 @@
 
     <div class="card">
       <p class="section-title">
-        <i class="ti ti-mail" aria-hidden="true"></i>
-        Cover letter draft
+        <i class="ti ti-mail" aria-hidden="true"></i> Cover letter draft
         <button class="copy-btn" onclick="copyText('cover-out', this)">Copy</button>
       </p>
       <div id="cover-out" class="result-text"></div>
     </div>
 
-    <button class="big-btn" id="download-btn" onclick="downloadResume()">
-      <i class="ti ti-download" aria-hidden="true"></i> Download updated resume (.docx)
-    </button>
+    <div class="card">
+      <p class="section-title"><i class="ti ti-file-download" aria-hidden="true"></i> Download your updated resume</p>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">Your original resume with experience bullets replaced in-place. Name, contact info, education, skills — all preserved exactly as-is. Cover letter appended on a second page.</p>
+      <button class="big-btn" style="margin-top:0;" id="download-btn" onclick="downloadUpdatedResume()">
+        <i class="ti ti-download" aria-hidden="true"></i> Download updated resume (.docx)
+      </button>
+    </div>
   </div>
 
   <footer>
-    Built with the <a href="https://www.anthropic.com" target="_blank">Anthropic Claude API</a> &nbsp;·&nbsp;
-    Your resume data is processed locally and never stored.
+    Built with the <a href="https://www.anthropic.com" target="_blank">Anthropic Claude API</a> &nbsp;·&nbsp; Your resume is processed locally and never stored.
   </footer>
-
 </div>
 
 <script>
@@ -476,105 +238,105 @@
   let lastResult = null;
   let originalFileName = 'resume';
 
+  // Load saved API key
+  window.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem('jaa_api_key');
+    if (saved) document.getElementById('api-key').value = saved;
+  });
+
   function showStep(n) {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
     document.getElementById('step' + n).classList.add('active');
   }
 
   function reset() {
-    resumeText = '';
+    resumeText = ''; lastResult = null;
     document.getElementById('job-input').value = '';
     document.getElementById('file-input').value = '';
-    const zone = document.getElementById('upload-zone');
-    zone.classList.remove('has-file');
+    document.getElementById('upload-zone').classList.remove('has-file');
     document.getElementById('upload-label').textContent = 'Upload your Word resume';
-    document.getElementById('upload-hint').textContent = '.docx files only — click to browse';
+    document.getElementById('upload-hint').textContent = '.docx only — experience bullets will be replaced in-place';
     showStep(1);
+  }
+
+  function forgetKey(e) {
+    e.preventDefault();
+    localStorage.removeItem('jaa_api_key');
+    document.getElementById('api-key').value = '';
+    alert('Saved key removed.');
   }
 
   function toggleKey() {
     const input = document.getElementById('api-key');
     const icon = document.getElementById('eye-icon');
-    if (input.type === 'password') {
-      input.type = 'text';
-      icon.className = 'ti ti-eye-off';
-    } else {
-      input.type = 'password';
-      icon.className = 'ti ti-eye';
-    }
+    if (input.type === 'password') { input.type = 'text'; icon.className = 'ti ti-eye-off'; }
+    else { input.type = 'password'; icon.className = 'ti ti-eye'; }
   }
 
   async function handleFile(event) {
     const file = event.target.files[0];
     if (!file) return;
-    if (!file.name.endsWith('.docx')) {
-      alert('Please upload a .docx file.');
-      return;
-    }
+    if (!file.name.endsWith('.docx')) { alert('Please upload a .docx file.'); return; }
     try {
       const arrayBuffer = await file.arrayBuffer();
       const result = await mammoth.extractRawText({ arrayBuffer });
       resumeText = result.value;
       originalFileName = file.name.replace(/\.docx$/i, '');
-      const zone = document.getElementById('upload-zone');
-      zone.classList.add('has-file');
+      document.getElementById('upload-zone').classList.add('has-file');
       document.getElementById('upload-label').textContent = file.name;
       const wordCount = resumeText.split(/\s+/).filter(Boolean).length;
-      document.getElementById('upload-hint').textContent = 'Resume loaded — ' + wordCount + ' words extracted';
+      document.getElementById('upload-hint').textContent = 'Loaded — ' + wordCount + ' words extracted';
     } catch (e) {
-      alert('Could not read this file. Please make sure it is a valid .docx Word document.');
+      alert('Could not read this file. Please ensure it is a valid .docx Word document.');
     }
   }
 
   async function copyText(id, btn) {
-    const text = document.getElementById(id).textContent;
-    await navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(document.getElementById(id).textContent);
     btn.textContent = 'Copied!';
     setTimeout(() => btn.textContent = 'Copy', 2000);
   }
 
   const statusMessages = [
-    'Reading job description…',
-    'Extracting required skills…',
-    'Comparing against your resume…',
-    'Identifying skill gaps…',
-    'Rewriting resume bullets…',
-    'Drafting cover letter…',
-    'Scoring your match…',
-    'Finalizing results…'
+    'Reading job description…', 'Extracting required skills…',
+    'Comparing against your resume…', 'Identifying skill gaps…',
+    'Rewriting experience bullets…', 'Drafting cover letter…',
+    'Scoring your match…', 'Finalizing results…'
   ];
 
   async function runAgent() {
     const apiKey = document.getElementById('api-key').value.trim();
     const job = document.getElementById('job-input').value.trim();
-
     if (!apiKey) { alert('Please enter your Anthropic API key.'); return; }
     if (!job) { alert('Please paste the job description.'); return; }
     if (!resumeText) { alert('Please upload your Word resume (.docx).'); return; }
 
+    // Save API key for next time
+    localStorage.setItem('jaa_api_key', apiKey);
     showStep(2);
     let msgIdx = 0;
     const statusEl = document.getElementById('stream-status');
     const bar = document.getElementById('progress-bar');
     statusEl.textContent = statusMessages[0];
     bar.style.width = '5%';
-
     const interval = setInterval(() => {
       msgIdx = Math.min(msgIdx + 1, statusMessages.length - 1);
       statusEl.textContent = statusMessages[msgIdx];
       bar.style.width = Math.min(10 + msgIdx * 11, 90) + '%';
     }, 1800);
 
-    const systemPrompt = `You are a job application assistant. Analyze the job description and resume provided, then return a JSON object ONLY — no markdown, no backticks, no extra text — with exactly these keys:
+    const systemPrompt = `You are a job application assistant. Analyze the job description and resume, then return a JSON object ONLY — no markdown, no backticks, no extra text — with exactly these keys:
 {
-  "score": number between 0 and 100,
-  "scoreLabel": short label e.g. "Strong match" or "Partial match" or "Low match",
-  "scoreSummary": one clear sentence summarizing the fit,
+  "score": number 0-100,
+  "scoreLabel": "Strong match" or "Partial match" or "Low match",
+  "scoreSummary": one sentence summarizing fit,
   "skillsMatch": array of up to 6 short skill strings the candidate has that match the role,
-  "skillsGap": array of up to 5 short skill strings required by the role but missing from the resume,
-  "rewrittenBullets": string with 4-5 rewritten resume bullet points tailored to this role, each on its own line starting with •,
+  "skillsGap": array of up to 5 short skill strings required but missing,
+  "originalBullets": array of the candidate's EXACT original experience bullet strings copied verbatim from the resume — identify lines that describe job duties or accomplishments,
+  "tailoredBullets": array of rewritten versions of those same bullets tailored to the job description — MUST be the same length as originalBullets, one rewrite per original,
   "coverLetter": string with a 3-paragraph tailored cover letter
-}`;
+}
+CRITICAL: originalBullets must be copied EXACTLY as they appear in the resume text so they can be found and swapped. tailoredBullets must have the same number of items as originalBullets.`;
 
     try {
       const resp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -587,7 +349,7 @@
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-5',
-          max_tokens: 1500,
+          max_tokens: 2000,
           system: systemPrompt,
           messages: [{ role: 'user', content: `JOB DESCRIPTION:\n${job}\n\nRESUME:\n${resumeText}` }]
         })
@@ -597,42 +359,24 @@
       clearInterval(interval);
       bar.style.width = '100%';
 
-      if (data.error) {
-        statusEl.textContent = 'API error: ' + data.error.message;
-        return;
-      }
+      if (data.error) { statusEl.textContent = 'API error: ' + data.error.message; return; }
 
       const raw = (data.content || []).map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
-      const result = JSON.parse(raw);
+      lastResult = JSON.parse(raw);
 
-      const score = result.score;
+      const score = lastResult.score;
       const ring = document.getElementById('score-ring');
-      if (score >= 75) {
-        ring.style.background = 'var(--success-bg)';
-        ring.style.color = 'var(--success-text)';
-      } else if (score >= 50) {
-        ring.style.background = 'var(--warning-bg)';
-        ring.style.color = 'var(--warning-text)';
-      } else {
-        ring.style.background = 'var(--danger-bg)';
-        ring.style.color = 'var(--danger-text)';
-      }
+      ring.style.background = score >= 75 ? 'var(--success-bg)' : score >= 50 ? 'var(--warning-bg)' : 'var(--danger-bg)';
+      ring.style.color = score >= 75 ? 'var(--success-text)' : score >= 50 ? 'var(--warning-text)' : 'var(--danger-text)';
       ring.textContent = score + '%';
-
-      document.getElementById('score-label').textContent = result.scoreLabel;
-      document.getElementById('score-summary').textContent = result.scoreSummary;
-
-      document.getElementById('skills-match').innerHTML =
-        (result.skillsMatch || []).map(s => `<span class="tag tag-green">${s}</span>`).join('');
-
-      document.getElementById('skills-gap').innerHTML =
-        (result.skillsGap || []).length
-          ? result.skillsGap.map(s => `<span class="tag tag-red">${s}</span>`).join('')
-          : '<span style="font-size:13px;color:var(--text-secondary);">No significant gaps found.</span>';
-
-      document.getElementById('bullets-out').textContent = result.rewrittenBullets;
-      document.getElementById('cover-out').textContent = result.coverLetter;
-      lastResult = result;
+      document.getElementById('score-label').textContent = lastResult.scoreLabel;
+      document.getElementById('score-summary').textContent = lastResult.scoreSummary;
+      document.getElementById('skills-match').innerHTML = (lastResult.skillsMatch || []).map(s => `<span class="tag tag-green">${s}</span>`).join('');
+      document.getElementById('skills-gap').innerHTML = (lastResult.skillsGap || []).length
+        ? lastResult.skillsGap.map(s => `<span class="tag tag-red">${s}</span>`).join('')
+        : '<span style="font-size:13px;color:var(--text-secondary);">No significant gaps found.</span>';
+      document.getElementById('bullets-out').textContent = (lastResult.tailoredBullets || []).map(b => '• ' + b).join('\n');
+      document.getElementById('cover-out').textContent = lastResult.coverLetter;
 
       showStep(3);
     } catch (e) {
@@ -642,116 +386,138 @@
     }
   }
 
-  async function downloadResume() {
-    if (!lastResult) return;
+  async function downloadUpdatedResume() {
+    if (!lastResult || !resumeText) return;
     const btn = document.getElementById('download-btn');
     btn.disabled = true;
-    btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> Building document…';
+    btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> Building your updated resume…';
 
-    const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } = docx;
+    try {
+      const { Document, Packer, Paragraph, TextRun, AlignmentType, BorderStyle } = docx;
 
-    const bullets = lastResult.rewrittenBullets
-      .split('\n')
-      .map(l => l.trim())
-      .filter(l => l.startsWith('•'))
-      .map(l => l.replace(/^•\s*/, ''));
+      // Build replacement map: exact original text → tailored text
+      const originals = lastResult.originalBullets || [];
+      const tailored = lastResult.tailoredBullets || [];
+      const replacements = {};
+      originals.forEach((orig, i) => {
+        if (tailored[i]) {
+          replacements[orig.trim()] = tailored[i].trim();
+          // Also store without leading bullet chars
+          const stripped = orig.trim().replace(/^[•\-·▪○*]\s*/, '').trim();
+          replacements[stripped] = tailored[i].trim();
+        }
+      });
 
-    const coverParagraphs = lastResult.coverLetter
-      .split('\n')
-      .map(l => l.trim())
-      .filter(l => l.length > 0);
+      const isHeading = (line) => {
+        const t = line.trim();
+        if (!t || t.length > 70) return false;
+        if (t === t.toUpperCase() && t.replace(/\s/g,'').length > 2) return true;
+        const kw = ['experience','education','skills','summary','objective','certifications',
+          'projects','profile','employment','work history','qualifications','achievements','awards'];
+        return kw.some(k => t.toLowerCase() === k || t.toLowerCase().startsWith(k + ' '));
+      };
 
-    const divider = () => new Paragraph({
-      border: { bottom: { style: BorderStyle.SINGLE, size: 4, color: 'cccccc', space: 1 } },
-      spacing: { after: 200 }
-    });
+      const isBulletLine = (line) => /^[•\-·▪○*]/.test(line.trim());
 
-    const doc = new Document({
-      styles: {
-        default: { document: { run: { font: 'Calibri', size: 24 } } },
-        paragraphStyles: [
-          {
-            id: 'Heading1', name: 'Heading 1', basedOn: 'Normal', next: 'Normal', quickFormat: true,
-            run: { size: 32, bold: true, font: 'Calibri', color: '1a1a18' },
-            paragraph: { spacing: { before: 240, after: 120 } }
-          },
-          {
-            id: 'Heading2', name: 'Heading 2', basedOn: 'Normal', next: 'Normal', quickFormat: true,
-            run: { size: 26, bold: true, font: 'Calibri', color: '333330' },
-            paragraph: { spacing: { before: 200, after: 80 } }
+      const allLines = resumeText.split('\n');
+      const children = [];
+      let lineIdx = 0;
+
+      for (const raw of allLines) {
+        const line = raw.trim();
+
+        if (!line) {
+          children.push(new Paragraph({ spacing: { after: 60 } }));
+          lineIdx++;
+          continue;
+        }
+
+        // Check for replacement match
+        const stripped = line.replace(/^[•\-·▪○*]\s*/, '').trim();
+        const replacement = replacements[line] || replacements[stripped];
+
+        if (replacement) {
+          // Replaced bullet — new tailored text
+          children.push(new Paragraph({
+            children: [new TextRun({ text: '• ' + replacement, font: 'Calibri', size: 22 })],
+            spacing: { after: 100 },
+            indent: { left: 360 }
+          }));
+        } else if (isHeading(line)) {
+          children.push(new Paragraph({
+            children: [new TextRun({ text: line, bold: true, size: 26, font: 'Calibri' })],
+            border: { bottom: { style: BorderStyle.SINGLE, size: 4, color: 'cccccc', space: 4 } },
+            spacing: { before: 280, after: 120 }
+          }));
+        } else if (isBulletLine(line)) {
+          // Original bullet not replaced — keep as-is
+          const bulletText = line.replace(/^[•\-·▪○*]\s*/, '');
+          children.push(new Paragraph({
+            children: [new TextRun({ text: '• ' + bulletText, font: 'Calibri', size: 22 })],
+            spacing: { after: 80 },
+            indent: { left: 360 }
+          }));
+        } else if (lineIdx < 5 && line.length < 60) {
+          // Top of resume — name / contact
+          const isEmail = /@/.test(line) || /\d{3}[-.\s]\d{3}/.test(line) || /linkedin|github/i.test(line);
+          if (lineIdx === 0) {
+            children.push(new Paragraph({
+              children: [new TextRun({ text: line, bold: true, size: 40, font: 'Calibri' })],
+              alignment: AlignmentType.CENTER, spacing: { after: 60 }
+            }));
+          } else {
+            children.push(new Paragraph({
+              children: [new TextRun({ text: line, font: 'Calibri', size: 20, color: isEmail ? '444440' : undefined })],
+              alignment: AlignmentType.CENTER, spacing: { after: 60 }
+            }));
           }
-        ]
-      },
-      sections: [{
-        properties: {
-          page: {
-            size: { width: 12240, height: 15840 },
-            margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 }
-          }
-        },
-        children: [
-          new Paragraph({
-            heading: HeadingLevel.HEADING_1,
-            children: [new TextRun('Tailored Resume')]
-          }),
-          new Paragraph({
-            children: [new TextRun({
-              text: 'Match score: ' + lastResult.score + '% — ' + lastResult.scoreLabel + '  |  ' + lastResult.scoreSummary,
-              italics: true, color: '666660', size: 20
-            })],
-            spacing: { after: 160 }
-          }),
-          divider(),
-
-          new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Matched Skills')] }),
-          new Paragraph({
-            children: [new TextRun({ text: (lastResult.skillsMatch || []).join('   ·   '), color: '1D9E75', size: 22 })],
+        } else {
+          // Regular line — job titles, dates, company names, etc.
+          children.push(new Paragraph({
+            children: [new TextRun({ text: line, font: 'Calibri', size: 22 })],
             spacing: { after: 80 }
-          }),
-          ...(lastResult.skillsGap && lastResult.skillsGap.length ? [
-            new Paragraph({
-              children: [new TextRun({ text: 'Areas to strengthen: ' + lastResult.skillsGap.join(', '), color: '999994', size: 20, italics: true })],
-              spacing: { after: 200 }
-            })
-          ] : [new Paragraph({ spacing: { after: 200 } })]),
+          }));
+        }
+        lineIdx++;
+      }
 
-          divider(),
-          new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Tailored Experience')] }),
-          ...bullets.map(b => new Paragraph({
-            children: [new TextRun(b)],
-            bullet: { level: 0 },
-            spacing: { after: 100 }
-          })),
+      // Append cover letter on page 2
+      children.push(new Paragraph({ pageBreakBefore: true, children: [new TextRun('')] }));
+      children.push(new Paragraph({
+        children: [new TextRun({ text: 'Cover Letter', bold: true, size: 30, font: 'Calibri' })],
+        border: { bottom: { style: BorderStyle.SINGLE, size: 4, color: 'cccccc', space: 4 } },
+        spacing: { after: 240 }
+      }));
+      (lastResult.coverLetter || '').split('\n').map(p => p.trim()).filter(p => p).forEach(p => {
+        children.push(new Paragraph({
+          children: [new TextRun({ text: p, font: 'Calibri', size: 22 })],
+          spacing: { after: 180 }, alignment: AlignmentType.JUSTIFIED
+        }));
+      });
+      children.push(new Paragraph({ spacing: { after: 240 } }));
+      children.push(new Paragraph({
+        children: [new TextRun({ text: 'Tailored by Job Application Agent · ' + new Date().toLocaleDateString(), italics: true, color: '999994', size: 18, font: 'Calibri' })],
+        alignment: AlignmentType.RIGHT
+      }));
 
-          new Paragraph({ spacing: { after: 200 } }),
-          divider(),
-          new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Cover Letter')] }),
-          ...coverParagraphs.map(p => new Paragraph({
-            children: [new TextRun(p)],
-            spacing: { after: 180 },
-            alignment: AlignmentType.JUSTIFIED
-          })),
+      const doc = new Document({
+        sections: [{
+          properties: { page: { size: { width: 12240, height: 15840 }, margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 } } },
+          children
+        }]
+      });
 
-          new Paragraph({ spacing: { after: 200 } }),
-          divider(),
-          new Paragraph({
-            children: [new TextRun({
-              text: 'Generated by Job Application Agent · ' + new Date().toLocaleDateString(),
-              italics: true, color: '999994', size: 18
-            })],
-            alignment: AlignmentType.RIGHT
-          })
-        ]
-      }]
-    });
-
-    const blob = await Packer.toBlob(doc);
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = originalFileName + '_tailored.docx';
-    a.click();
-    URL.revokeObjectURL(url);
+      const blob = await Packer.toBlob(doc);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = originalFileName + '_tailored.docx';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch(e) {
+      console.error(e);
+      alert('Error building the document. Please try again.');
+    }
 
     btn.disabled = false;
     btn.innerHTML = '<i class="ti ti-download" aria-hidden="true"></i> Download updated resume (.docx)';
