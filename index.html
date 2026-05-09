@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Job Application Agent</title>
   <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -457,6 +458,10 @@
       </p>
       <div id="cover-out" class="result-text"></div>
     </div>
+
+    <button class="big-btn" id="download-btn" onclick="downloadResume()">
+      <i class="ti ti-download" aria-hidden="true"></i> Download updated resume (.docx)
+    </button>
   </div>
 
   <footer>
@@ -468,6 +473,8 @@
 
 <script>
   let resumeText = '';
+  let lastResult = null;
+  let originalFileName = 'resume';
 
   function showStep(n) {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -508,6 +515,7 @@
       const arrayBuffer = await file.arrayBuffer();
       const result = await mammoth.extractRawText({ arrayBuffer });
       resumeText = result.value;
+      originalFileName = file.name.replace(/\.docx$/i, '');
       const zone = document.getElementById('upload-zone');
       zone.classList.add('has-file');
       document.getElementById('upload-label').textContent = file.name;
@@ -624,6 +632,7 @@
 
       document.getElementById('bullets-out').textContent = result.rewrittenBullets;
       document.getElementById('cover-out').textContent = result.coverLetter;
+      lastResult = result;
 
       showStep(3);
     } catch (e) {
@@ -631,6 +640,121 @@
       statusEl.textContent = 'Something went wrong. Check your API key and try again.';
       console.error(e);
     }
+  }
+
+  async function downloadResume() {
+    if (!lastResult) return;
+    const btn = document.getElementById('download-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> Building document…';
+
+    const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } = docx;
+
+    const bullets = lastResult.rewrittenBullets
+      .split('\n')
+      .map(l => l.trim())
+      .filter(l => l.startsWith('•'))
+      .map(l => l.replace(/^•\s*/, ''));
+
+    const coverParagraphs = lastResult.coverLetter
+      .split('\n')
+      .map(l => l.trim())
+      .filter(l => l.length > 0);
+
+    const divider = () => new Paragraph({
+      border: { bottom: { style: BorderStyle.SINGLE, size: 4, color: 'cccccc', space: 1 } },
+      spacing: { after: 200 }
+    });
+
+    const doc = new Document({
+      styles: {
+        default: { document: { run: { font: 'Calibri', size: 24 } } },
+        paragraphStyles: [
+          {
+            id: 'Heading1', name: 'Heading 1', basedOn: 'Normal', next: 'Normal', quickFormat: true,
+            run: { size: 32, bold: true, font: 'Calibri', color: '1a1a18' },
+            paragraph: { spacing: { before: 240, after: 120 } }
+          },
+          {
+            id: 'Heading2', name: 'Heading 2', basedOn: 'Normal', next: 'Normal', quickFormat: true,
+            run: { size: 26, bold: true, font: 'Calibri', color: '333330' },
+            paragraph: { spacing: { before: 200, after: 80 } }
+          }
+        ]
+      },
+      sections: [{
+        properties: {
+          page: {
+            size: { width: 12240, height: 15840 },
+            margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 }
+          }
+        },
+        children: [
+          new Paragraph({
+            heading: HeadingLevel.HEADING_1,
+            children: [new TextRun('Tailored Resume')]
+          }),
+          new Paragraph({
+            children: [new TextRun({
+              text: 'Match score: ' + lastResult.score + '% — ' + lastResult.scoreLabel + '  |  ' + lastResult.scoreSummary,
+              italics: true, color: '666660', size: 20
+            })],
+            spacing: { after: 160 }
+          }),
+          divider(),
+
+          new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Matched Skills')] }),
+          new Paragraph({
+            children: [new TextRun({ text: (lastResult.skillsMatch || []).join('   ·   '), color: '1D9E75', size: 22 })],
+            spacing: { after: 80 }
+          }),
+          ...(lastResult.skillsGap && lastResult.skillsGap.length ? [
+            new Paragraph({
+              children: [new TextRun({ text: 'Areas to strengthen: ' + lastResult.skillsGap.join(', '), color: '999994', size: 20, italics: true })],
+              spacing: { after: 200 }
+            })
+          ] : [new Paragraph({ spacing: { after: 200 } })]),
+
+          divider(),
+          new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Tailored Experience')] }),
+          ...bullets.map(b => new Paragraph({
+            children: [new TextRun(b)],
+            bullet: { level: 0 },
+            spacing: { after: 100 }
+          })),
+
+          new Paragraph({ spacing: { after: 200 } }),
+          divider(),
+          new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun('Cover Letter')] }),
+          ...coverParagraphs.map(p => new Paragraph({
+            children: [new TextRun(p)],
+            spacing: { after: 180 },
+            alignment: AlignmentType.JUSTIFIED
+          })),
+
+          new Paragraph({ spacing: { after: 200 } }),
+          divider(),
+          new Paragraph({
+            children: [new TextRun({
+              text: 'Generated by Job Application Agent · ' + new Date().toLocaleDateString(),
+              italics: true, color: '999994', size: 18
+            })],
+            alignment: AlignmentType.RIGHT
+          })
+        ]
+      }]
+    });
+
+    const blob = await Packer.toBlob(doc);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = originalFileName + '_tailored.docx';
+    a.click();
+    URL.revokeObjectURL(url);
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-download" aria-hidden="true"></i> Download updated resume (.docx)';
   }
 </script>
 </body>
