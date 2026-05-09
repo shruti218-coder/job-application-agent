@@ -77,6 +77,7 @@
     }
     .upload-zone:hover { background: var(--bg-secondary); }
     .upload-zone.has-file { border-color: var(--success); background: var(--bg-success); }
+    .upload-zone.drag-over { border-color: var(--accent); background: var(--bg-secondary); transform: scale(1.01); transition: transform 0.1s ease; }
     .upload-zone.has-file .upload-icon { color: var(--success); }
     .upload-zone.has-file .upload-label { color: var(--success-text); }
     .upload-zone.has-file .upload-hint { color: var(--success-text); opacity: 0.75; }
@@ -165,7 +166,7 @@
       <input type="file" id="file-input" accept=".docx" style="display:none" onchange="handleFile(event)">
       <div class="upload-icon"><i class="ti ti-file-word" aria-hidden="true"></i></div>
       <div class="upload-label" id="upload-label">Upload your Word resume</div>
-      <div class="upload-hint" id="upload-hint">.docx only — experience bullets will be replaced in-place</div>
+      <div class="upload-hint" id="upload-hint">Drag &amp; drop your .docx here, or click to browse</div>
     </div>
 
     <button class="big-btn" onclick="runAgent()">
@@ -238,11 +239,6 @@
   let lastResult = null;
   let originalFileName = 'resume';
 
-  // Load saved API key
-  window.addEventListener('DOMContentLoaded', () => {
-    const saved = localStorage.getItem('jaa_api_key');
-    if (saved) document.getElementById('api-key').value = saved;
-  });
 
   function showStep(n) {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -255,7 +251,7 @@
     document.getElementById('file-input').value = '';
     document.getElementById('upload-zone').classList.remove('has-file');
     document.getElementById('upload-label').textContent = 'Upload your Word resume';
-    document.getElementById('upload-hint').textContent = '.docx only — experience bullets will be replaced in-place';
+    document.getElementById('upload-hint').textContent = 'Drag &amp; drop your .docx here, or click to browse';
     showStep(1);
   }
 
@@ -273,8 +269,7 @@
     else { input.type = 'password'; icon.className = 'ti ti-eye'; }
   }
 
-  async function handleFile(event) {
-    const file = event.target.files[0];
+  async function processFile(file) {
     if (!file) return;
     if (!file.name.endsWith('.docx')) { alert('Please upload a .docx file.'); return; }
     try {
@@ -282,7 +277,9 @@
       const result = await mammoth.extractRawText({ arrayBuffer });
       resumeText = result.value;
       originalFileName = file.name.replace(/\.docx$/i, '');
-      document.getElementById('upload-zone').classList.add('has-file');
+      const zone = document.getElementById('upload-zone');
+      zone.classList.add('has-file');
+      zone.classList.remove('drag-over');
       document.getElementById('upload-label').textContent = file.name;
       const wordCount = resumeText.split(/\s+/).filter(Boolean).length;
       document.getElementById('upload-hint').textContent = 'Loaded — ' + wordCount + ' words extracted';
@@ -290,6 +287,38 @@
       alert('Could not read this file. Please ensure it is a valid .docx Word document.');
     }
   }
+
+  async function handleFile(event) {
+    processFile(event.target.files[0]);
+  }
+
+  // Set up drag and drop on the upload zone
+  window.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem('jaa_api_key');
+    if (saved) document.getElementById('api-key').value = saved;
+
+    const zone = document.getElementById('upload-zone');
+
+    zone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.classList.add('drag-over');
+    });
+
+    zone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.classList.remove('drag-over');
+    });
+
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) processFile(file);
+    });
+  });
 
   async function copyText(id, btn) {
     await navigator.clipboard.writeText(document.getElementById(id).textContent);
@@ -325,18 +354,23 @@
       bar.style.width = Math.min(10 + msgIdx * 11, 90) + '%';
     }, 1800);
 
-    const systemPrompt = `You are a job application assistant. Analyze the job description and resume, then return a JSON object ONLY — no markdown, no backticks, no extra text — with exactly these keys:
+    const systemPrompt = `You are a job application assistant. You will receive two clearly labelled sections:
+- RESUME: the candidate's personal resume
+- JOB DESCRIPTION: the role they are applying for
+These are two completely different documents. Do NOT confuse them.
+
+Analyze the RESUME against the JOB DESCRIPTION and return a JSON object ONLY with exactly these keys:
 {
-  "score": number 0-100,
+  "score": number 0-100 how well RESUME matches JOB DESCRIPTION,
   "scoreLabel": "Strong match" or "Partial match" or "Low match",
-  "scoreSummary": one sentence summarizing fit,
-  "skillsMatch": array of up to 6 short skill strings the candidate has that match the role,
-  "skillsGap": array of up to 5 short skill strings required but missing,
-  "originalBullets": array of the candidate's EXACT original experience bullet strings copied verbatim from the resume — identify lines that describe job duties or accomplishments,
-  "tailoredBullets": array of rewritten versions of those same bullets tailored to the job description — MUST be the same length as originalBullets, one rewrite per original,
-  "coverLetter": string with a 3-paragraph tailored cover letter
+  "scoreSummary": one sentence summarizing fit based on the RESUME,
+  "skillsMatch": up to 6 skills the candidate has (from RESUME) matching JOB DESCRIPTION,
+  "skillsGap": up to 5 skills in JOB DESCRIPTION missing from RESUME,
+  "originalBullets": EXACT bullet strings copied verbatim from RESUME only - the candidate's own past duties/accomplishments - do NOT include any text from JOB DESCRIPTION,
+  "tailoredBullets": rewritten versions of those RESUME bullets tailored to JOB DESCRIPTION - MUST be same length as originalBullets,
+  "coverLetter": 3-paragraph cover letter in first person from candidate's perspective
 }
-CRITICAL: originalBullets must be copied EXACTLY as they appear in the resume text so they can be found and swapped. tailoredBullets must have the same number of items as originalBullets.`;
+CRITICAL: originalBullets must come ONLY from the RESUME section, copied EXACTLY as written. Never copy job description text into originalBullets. tailoredBullets must have the same count as originalBullets.`;
 
     try {
       const resp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -351,7 +385,7 @@ CRITICAL: originalBullets must be copied EXACTLY as they appear in the resume te
           model: 'claude-sonnet-4-5',
           max_tokens: 2000,
           system: systemPrompt,
-          messages: [{ role: 'user', content: `JOB DESCRIPTION:\n${job}\n\nRESUME:\n${resumeText}` }]
+          messages: [{ role: 'user', content: `RESUME (this is the candidate\'s personal resume — extract bullets from here):\n${resumeText}\n\n---\n\nJOB DESCRIPTION (this is the role being applied for — do NOT extract bullets from here):\n${job}` }]
         })
       });
 
