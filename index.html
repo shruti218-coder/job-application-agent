@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Application Agent</title>
+  <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-secondary: #f5f5f3;
+      --bg-success: #e1f5ee;
+      --text: #1a1a18;
+      --text-secondary: #6b6b67;
+      --border: rgba(0,0,0,0.12);
+      --border-hover: rgba(0,0,0,0.25);
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --accent: #1a1a18;
+      --success: #1D9E75;
+      --success-text: #3B6D11;
+      --success-bg: #EAF3DE;
+      --danger: #E24B4A;
+      --danger-text: #A32D2D;
+      --danger-bg: #FCEBEB;
+      --warning-text: #BA7517;
+      --warning-bg: #FAEEDA;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1c1a;
+        --bg-secondary: #252523;
+        --bg-success: #04342C;
+        --text: #f0ede8;
+        --text-secondary: #9a9a94;
+        --border: rgba(255,255,255,0.12);
+        --border-hover: rgba(255,255,255,0.25);
+        --accent: #f0ede8;
+        --success: #5DCAA5;
+        --success-text: #9FE1CB;
+        --success-bg: #085041;
+        --danger-text: #F7C1C1;
+        --danger-bg: #501313;
+        --warning-text: #FAC775;
+        --warning-bg: #412402;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-secondary);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+    }
+
+    header {
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    header p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      line-height: 1.6;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 99px;
+      background: var(--success-bg);
+      color: var(--success-text);
+      margin-bottom: 12px;
+    }
+
+    .step { display: none; }
+    .step.active { display: block; }
+
+    .progress {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 1.75rem;
+    }
+
+    .pip {
+      height: 3px;
+      flex: 1;
+      border-radius: 99px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+
+    .pip.done { background: var(--accent); }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 8px;
+      margin-top: 1.25rem;
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      font-size: 14px;
+      color: var(--text);
+      font-family: inherit;
+      line-height: 1.6;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    textarea { resize: vertical; min-height: 130px; }
+
+    textarea:focus, input[type="text"]:focus {
+      border-color: var(--border-hover);
+      box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+    }
+
+    .upload-zone {
+      background: var(--bg);
+      border: 1.5px dashed var(--border-hover);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      position: relative;
+    }
+
+    .upload-zone:hover { background: var(--bg-secondary); }
+
+    .upload-zone.has-file {
+      border-color: var(--success);
+      background: var(--bg-success);
+    }
+
+    .upload-zone.has-file .upload-icon { color: var(--success); }
+    .upload-zone.has-file .upload-label { color: var(--success-text); }
+    .upload-zone.has-file .upload-hint { color: var(--success-text); opacity: 0.75; }
+
+    .upload-icon { font-size: 28px; color: var(--text-secondary); margin-bottom: 8px; }
+    .upload-label { font-size: 14px; font-weight: 500; color: var(--text); }
+    .upload-hint { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+    .api-key-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .api-key-row input { flex: 1; }
+
+    .toggle-key {
+      background: none;
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0 12px;
+      height: 42px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .big-btn {
+      width: 100%;
+      padding: 13px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: var(--radius-md);
+      margin-top: 1.25rem;
+      transition: opacity 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .big-btn:hover { opacity: 0.85; }
+    .big-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .card {
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .score-card {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .score-ring {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 10px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 12px;
+      padding: 4px 11px;
+      border-radius: 99px;
+      margin: 3px 3px 3px 0;
+      font-weight: 500;
+    }
+
+    .tag-green { background: var(--success-bg); color: var(--success-text); }
+    .tag-red { background: var(--danger-bg); color: var(--danger-text); }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .result-text {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+
+    .back-btn {
+      font-size: 13px;
+      color: var(--text-secondary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin-bottom: 1.25rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .back-btn:hover { color: var(--text); }
+
+    .copy-btn {
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: none;
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 4px 10px;
+      cursor: pointer;
+      float: right;
+      margin-top: -2px;
+    }
+
+    .copy-btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+    .loading-label {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    .status-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+      min-height: 24px;
+    }
+
+    .prog-track {
+      margin-top: 1rem;
+      height: 3px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .prog-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    footer {
+      margin-top: 3rem;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    footer a { color: var(--text-secondary); }
+
+    @media (max-width: 500px) {
+      .two-col { grid-template-columns: 1fr; }
+      body { padding: 1.25rem 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="badge"><i class="ti ti-robot" aria-hidden="true"></i> AI-powered</div>
+    <h1>Job Application Agent</h1>
+    <p>Paste a job description and upload your resume. The agent scores your match, rewrites your bullets, identifies skill gaps, and drafts a tailored cover letter — automatically.</p>
+  </header>
+
+  <!-- STEP 1: INPUT -->
+  <div id="step1" class="step active">
+    <div class="progress">
+      <div class="pip done"></div>
+      <div class="pip"></div>
+      <div class="pip"></div>
+    </div>
+
+    <div class="section-label" style="margin-top:0;">Anthropic API key</div>
+    <div class="api-key-row">
+      <input type="password" id="api-key" placeholder="sk-ant-api03-…" autocomplete="off" />
+      <button class="toggle-key" onclick="toggleKey()" title="Show/hide key">
+        <i class="ti ti-eye" id="eye-icon" aria-hidden="true"></i>
+      </button>
+    </div>
+    <p style="font-size:12px;color:var(--text-secondary);margin-top:6px;">
+      Your key is never stored or sent anywhere except directly to Anthropic's API.
+      <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:inherit;">Get a key →</a>
+    </p>
+
+    <div class="section-label">Job description</div>
+    <textarea id="job-input" placeholder="Paste the full job posting here…"></textarea>
+
+    <div class="section-label">Your resume</div>
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept=".docx" style="display:none" onchange="handleFile(event)">
+      <div class="upload-icon"><i class="ti ti-file-word" aria-hidden="true"></i></div>
+      <div class="upload-label" id="upload-label">Upload your Word resume</div>
+      <div class="upload-hint" id="upload-hint">.docx files only — click to browse</div>
+    </div>
+
+    <button class="big-btn" id="analyze-btn" onclick="runAgent()">
+      <i class="ti ti-sparkles" aria-hidden="true"></i> Analyze my application
+    </button>
+  </div>
+
+  <!-- STEP 2: LOADING -->
+  <div id="step2" class="step">
+    <div class="progress">
+      <div class="pip done"></div>
+      <div class="pip done"></div>
+      <div class="pip"></div>
+    </div>
+    <p class="loading-label">Analyzing your application…</p>
+    <p class="status-text" id="stream-status"></p>
+    <div class="prog-track"><div class="prog-fill" id="progress-bar"></div></div>
+  </div>
+
+  <!-- STEP 3: RESULTS -->
+  <div id="step3" class="step">
+    <div class="progress">
+      <div class="pip done"></div>
+      <div class="pip done"></div>
+      <div class="pip done"></div>
+    </div>
+
+    <button class="back-btn" onclick="reset()">
+      <i class="ti ti-arrow-left" aria-hidden="true"></i> Start over
+    </button>
+
+    <div class="card score-card">
+      <div class="score-ring" id="score-ring"></div>
+      <div>
+        <p style="font-size:17px;font-weight:600;margin-bottom:4px;" id="score-label"></p>
+        <p style="font-size:13px;color:var(--text-secondary);" id="score-summary"></p>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <p class="section-title">
+          <i class="ti ti-circle-check" style="color:var(--success);" aria-hidden="true"></i>
+          Skills you have
+        </p>
+        <div id="skills-match"></div>
+      </div>
+      <div class="card">
+        <p class="section-title">
+          <i class="ti ti-alert-circle" style="color:var(--danger);" aria-hidden="true"></i>
+          Gaps to address
+        </p>
+        <div id="skills-gap"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="section-title">
+        <i class="ti ti-list" aria-hidden="true"></i>
+        Rewritten resume bullets
+        <button class="copy-btn" onclick="copyText('bullets-out', this)">Copy</button>
+      </p>
+      <div id="bullets-out" class="result-text"></div>
+    </div>
+
+    <div class="card">
+      <p class="section-title">
+        <i class="ti ti-mail" aria-hidden="true"></i>
+        Cover letter draft
+        <button class="copy-btn" onclick="copyText('cover-out', this)">Copy</button>
+      </p>
+      <div id="cover-out" class="result-text"></div>
+    </div>
+  </div>
+
+  <footer>
+    Built with the <a href="https://www.anthropic.com" target="_blank">Anthropic Claude API</a> &nbsp;·&nbsp;
+    Your resume data is processed locally and never stored.
+  </footer>
+
+</div>
+
+<script>
+  let resumeText = '';
+
+  function showStep(n) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + n).classList.add('active');
+  }
+
+  function reset() {
+    resumeText = '';
+    document.getElementById('job-input').value = '';
+    document.getElementById('file-input').value = '';
+    const zone = document.getElementById('upload-zone');
+    zone.classList.remove('has-file');
+    document.getElementById('upload-label').textContent = 'Upload your Word resume';
+    document.getElementById('upload-hint').textContent = '.docx files only — click to browse';
+    showStep(1);
+  }
+
+  function toggleKey() {
+    const input = document.getElementById('api-key');
+    const icon = document.getElementById('eye-icon');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.className = 'ti ti-eye-off';
+    } else {
+      input.type = 'password';
+      icon.className = 'ti ti-eye';
+    }
+  }
+
+  async function handleFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (!file.name.endsWith('.docx')) {
+      alert('Please upload a .docx file.');
+      return;
+    }
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer });
+      resumeText = result.value;
+      const zone = document.getElementById('upload-zone');
+      zone.classList.add('has-file');
+      document.getElementById('upload-label').textContent = file.name;
+      const wordCount = resumeText.split(/\s+/).filter(Boolean).length;
+      document.getElementById('upload-hint').textContent = 'Resume loaded — ' + wordCount + ' words extracted';
+    } catch (e) {
+      alert('Could not read this file. Please make sure it is a valid .docx Word document.');
+    }
+  }
+
+  async function copyText(id, btn) {
+    const text = document.getElementById(id).textContent;
+    await navigator.clipboard.writeText(text);
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  }
+
+  const statusMessages = [
+    'Reading job description…',
+    'Extracting required skills…',
+    'Comparing against your resume…',
+    'Identifying skill gaps…',
+    'Rewriting resume bullets…',
+    'Drafting cover letter…',
+    'Scoring your match…',
+    'Finalizing results…'
+  ];
+
+  async function runAgent() {
+    const apiKey = document.getElementById('api-key').value.trim();
+    const job = document.getElementById('job-input').value.trim();
+
+    if (!apiKey) { alert('Please enter your Anthropic API key.'); return; }
+    if (!job) { alert('Please paste the job description.'); return; }
+    if (!resumeText) { alert('Please upload your Word resume (.docx).'); return; }
+
+    showStep(2);
+    let msgIdx = 0;
+    const statusEl = document.getElementById('stream-status');
+    const bar = document.getElementById('progress-bar');
+    statusEl.textContent = statusMessages[0];
+    bar.style.width = '5%';
+
+    const interval = setInterval(() => {
+      msgIdx = Math.min(msgIdx + 1, statusMessages.length - 1);
+      statusEl.textContent = statusMessages[msgIdx];
+      bar.style.width = Math.min(10 + msgIdx * 11, 90) + '%';
+    }, 1800);
+
+    const systemPrompt = `You are a job application assistant. Analyze the job description and resume provided, then return a JSON object ONLY — no markdown, no backticks, no extra text — with exactly these keys:
+{
+  "score": number between 0 and 100,
+  "scoreLabel": short label e.g. "Strong match" or "Partial match" or "Low match",
+  "scoreSummary": one clear sentence summarizing the fit,
+  "skillsMatch": array of up to 6 short skill strings the candidate has that match the role,
+  "skillsGap": array of up to 5 short skill strings required by the role but missing from the resume,
+  "rewrittenBullets": string with 4-5 rewritten resume bullet points tailored to this role, each on its own line starting with •,
+  "coverLetter": string with a 3-paragraph tailored cover letter
+}`;
+
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1500,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: `JOB DESCRIPTION:\n${job}\n\nRESUME:\n${resumeText}` }]
+        })
+      });
+
+      const data = await resp.json();
+      clearInterval(interval);
+      bar.style.width = '100%';
+
+      if (data.error) {
+        statusEl.textContent = 'API error: ' + data.error.message;
+        return;
+      }
+
+      const raw = (data.content || []).map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+      const result = JSON.parse(raw);
+
+      const score = result.score;
+      const ring = document.getElementById('score-ring');
+      if (score >= 75) {
+        ring.style.background = 'var(--success-bg)';
+        ring.style.color = 'var(--success-text)';
+      } else if (score >= 50) {
+        ring.style.background = 'var(--warning-bg)';
+        ring.style.color = 'var(--warning-text)';
+      } else {
+        ring.style.background = 'var(--danger-bg)';
+        ring.style.color = 'var(--danger-text)';
+      }
+      ring.textContent = score + '%';
+
+      document.getElementById('score-label').textContent = result.scoreLabel;
+      document.getElementById('score-summary').textContent = result.scoreSummary;
+
+      document.getElementById('skills-match').innerHTML =
+        (result.skillsMatch || []).map(s => `<span class="tag tag-green">${s}</span>`).join('');
+
+      document.getElementById('skills-gap').innerHTML =
+        (result.skillsGap || []).length
+          ? result.skillsGap.map(s => `<span class="tag tag-red">${s}</span>`).join('')
+          : '<span style="font-size:13px;color:var(--text-secondary);">No significant gaps found.</span>';
+
+      document.getElementById('bullets-out').textContent = result.rewrittenBullets;
+      document.getElementById('cover-out').textContent = result.coverLetter;
+
+      showStep(3);
+    } catch (e) {
+      clearInterval(interval);
+      statusEl.textContent = 'Something went wrong. Check your API key and try again.';
+      console.error(e);
+    }
+  }
+</script>
+</body>
+</html>
