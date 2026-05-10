@@ -2,7 +2,7 @@
 
 An AI-powered autonomous agent that analyzes job postings against your resume, rewrites your experience bullets in-place, identifies skill gaps, scores your match, and generates a tailored cover letter — all in one click.
 
-**[Live Demo →](https://YOUR-USERNAME.github.io/job-application-agent)**
+**[Live Demo →](https://shruti218-coder.github.io/job-application-agent)**
 
 ---
 
@@ -91,4 +91,4 @@ You'll need an [Anthropic API key](https://console.anthropic.com/settings/keys).
 
 ---
 
-Built by [Your Name](https://github.com/YOUR-USERNAME)
+Built by [Your Name](https://github.com/shruti218-coder)
